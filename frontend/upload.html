@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assess Lot & Image Upload - PyaazSure</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="brand-icon">🧅</div>
+      <div>
+        <span class="brand-title">PyaazSure</span>
+        <span class="brand-subtitle">SIH 2026 • Smart Onion Quality System</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Dashboard</a></li>
+      <li><a href="lot.html">Register Lot</a></li>
+      <li><a href="upload.html" class="active">Assess Lot</a></li>
+      <li><a href="history.html">Lot History</a></li>
+      <li><a href="report.html">Reports</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Sample Image Upload & AI Assessment</h1>
+        <p class="page-subtitle">Upload onion sample images or simulate batch capture to trigger AI grading.</p>
+      </div>
+    </div>
+
+    <!-- Main Section: Lot Selector & Actions -->
+    <div class="grid-3" style="grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+
+      <!-- Left Column: Lot Selection Card & Trigger -->
+      <div style="display:flex; flex-direction:column; gap:1.5rem;">
+        
+        <div class="card">
+          <h3 class="card-title">1. Select Onion Lot</h3>
+          
+          <div class="form-group">
+            <label class="form-label" for="lot-select">Target Lot ID</label>
+            <select id="lot-select" class="form-control">
+              <option value="">-- Select a Lot --</option>
+            </select>
+          </div>
+
+          <div id="lot-metadata-box" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; padding:1rem; border-radius:var(--radius-sm); font-size:0.88rem; margin-bottom:1rem;">
+            <div style="margin-bottom:0.4rem;"><strong>Procurement Centre:</strong> <span id="meta-centre">-</span></div>
+            <div style="margin-bottom:0.4rem;"><strong>Date:</strong> <span id="meta-date">-</span></div>
+            <div style="margin-bottom:0.4rem;"><strong>Sample Target:</strong> <span id="meta-target">-</span> onions</div>
+            <div><strong>Status:</strong> <span id="meta-status">-</span></div>
+          </div>
+
+          <div style="font-size:0.8rem; color:var(--text-muted);">
+            Don't have a lot yet? <a href="lot.html" style="color:var(--primary); font-weight:600;">Register a new lot here</a>.
+          </div>
+        </div>
+
+        <!-- AI Assessment Trigger Card -->
+        <div class="card" style="background: linear-gradient(135deg, #1e102f 0%, #4a148c 100%); color:#ffffff;">
+          <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:0.75rem; color:#f3e5f5;">3. Run AI Assessment</h3>
+          <p style="font-size:0.85rem; color:#e1bee7; margin-bottom:1.25rem;">
+            Executes Mock AI prediction engine across all captured sample images and triggers the Grading Engine.
+          </p>
+
+          <button id="btn-run-ai" class="btn btn-accent btn-block" style="padding:0.85rem; font-size:1rem;" disabled>
+            ⚡ Run Mock AI & Generate Report
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Image Upload & Sample Generator -->
+      <div class="card">
+        <h3 class="card-title">2. Sample Image Capture & Upload</h3>
+
+        <!-- Dual Upload Tabs / Options -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+          
+          <!-- Option A: File Upload Dropzone -->
+          <div class="dropzone" id="dropzone">
+            <div class="dropzone-icon">📷</div>
+            <div style="font-weight:600; font-size:0.95rem; margin-bottom:0.25rem;">Upload Custom Images</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">Drag & drop onion photos or click to browse</div>
+            <input type="file" id="file-input" multiple accept="image/*" style="display:none;">
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('file-input').click()">Browse Files</button>
+          </div>
+
+          <!-- Option B: 1-Click Synthetic Batch Generator -->
+          <div style="border: 2px dashed #e1bee7; background:#faf5fb; border-radius:var(--radius-md); padding:1.5rem; text-align:center;">
+            <div style="font-size:2.2rem; margin-bottom:0.5rem;">🧪</div>
+            <div style="font-weight:700; font-size:0.95rem; color:#4a148c; margin-bottom:0.25rem;">Generate Prototype Sample Batch</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">Simulate sample lot capture with 1-click</div>
+            
+            <div style="display:flex; gap:0.5rem; justify-content:center;">
+              <button class="btn btn-primary btn-sm" onclick="generateBatch(10)">+10 Onions</button>
+              <button class="btn btn-primary btn-sm" onclick="generateBatch(50)">+50 Onions</button>
+              <button class="btn btn-primary btn-sm" onclick="generateBatch(100)">+100 Onions</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Uploaded Images Counter & Preview Grid -->
+        <div style="border-top:1px solid var(--border-color); padding-top:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h4 style="font-size:0.95rem; font-weight:700;">Captured Images (<span id="img-count-badge">0</span>)</h4>
+            <span style="font-size:0.8rem; color:var(--text-muted);" id="img-status-msg">No images uploaded for this lot yet.</span>
+          </div>
+
+          <div class="image-grid" id="image-preview-grid">
+            <!-- Dynamic Image cards inserted here -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <p><strong>PyaazSure</strong> • Smart Onion Quality Assessment & Grading System for SIH 2026 Prototype</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/upload.js"></script>
+</body>
+</html>

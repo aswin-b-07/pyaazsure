@@ -1,0 +1,49 @@
+# Python / Virtual Environments
+__pycache__/
+*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+
+# Environment Variables & Credentials
+.env
+.env.*
+*.env
+.kaggle/
+.kaggle/kaggle.json
+
+# Datasets & Uploads
+data/
+data/raw/
+data/sorted/
+uploads/
+uploads/*
+!uploads/.gitkeep
+
+# Databases & SQLite
+*.db
+*.sqlite3
+
+# Test Coverage & Caches
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Build & Distribution
+build/
+dist/
+*.egg-info/
+

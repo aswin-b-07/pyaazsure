@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Quality Report - PyaazSure</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lightweight Chart.js for data visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="brand-icon">🧅</div>
+      <div>
+        <span class="brand-title">PyaazSure</span>
+        <span class="brand-subtitle">SIH 2026 • Smart Onion Quality System</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Dashboard</a></li>
+      <li><a href="lot.html">Register Lot</a></li>
+      <li><a href="upload.html">Assess Lot</a></li>
+      <li><a href="history.html">Lot History</a></li>
+      <li><a href="report.html" class="active">Reports</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+
+    <!-- Page Header & Actions -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Digital Quality Assessment Report</h1>
+        <p class="page-subtitle">Official lot-level grading, AI confidence metrics, and defect classification certificate.</p>
+      </div>
+      <div style="display:flex; gap:0.75rem;">
+        <button class="btn btn-secondary" onclick="window.print()">🖨️ Print Report</button>
+        <a href="history.html" class="btn btn-primary">📋 View Lot History</a>
+      </div>
+    </div>
+
+    <!-- Lot Selector Bar (if no lot_id in URL) -->
+    <div class="card" id="select-report-card" style="margin-bottom:1.5rem; display:none;">
+      <div style="display:flex; gap:1rem; align-items:center;">
+        <label style="font-weight:600; white-space:nowrap;">Select Lot Report:</label>
+        <select id="report-lot-select" class="form-control" style="max-width:400px;">
+          <option value="">-- Choose Assessed Lot --</option>
+        </select>
+        <button id="btn-load-report" class="btn btn-primary btn-sm">Load Report</button>
+      </div>
+    </div>
+
+    <!-- Report Certificate Container -->
+    <div id="report-container" style="display:none;">
+
+      <!-- Top Summary Header Card -->
+      <div class="card" style="background: linear-gradient(135deg, #1e102f 0%, #3b1360 100%); color:#ffffff; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <div style="font-size:0.85rem; color:#e1bee7; text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">LOT QUALITY CERTIFICATE</div>
+            <h2 style="font-size:2rem; font-weight:800; color:#ffffff; margin:0.2rem 0;" id="rep-lot-id">ONN-2026-XXXXX</h2>
+            <div style="font-size:0.95rem; color:#d1c4e9;">
+              Procurement Centre: <strong id="rep-centre-name" style="color:#ffffff;">-</strong> | Date: <strong id="rep-date" style="color:#ffffff;">-</strong>
+            </div>
+          </div>
+          <div style="text-align:right;" id="rep-status-badge">
+            <!-- Dynamic Status Badge -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Core Grading Metrics KPI Grid -->
+      <div class="grid-4" style="margin-bottom: 1.5rem;">
+        
+        <div class="stat-card" style="border-left: 5px solid #15803d;">
+          <div class="stat-icon green">🥇</div>
+          <div>
+            <div class="stat-value" id="rep-grade-a">0%</div>
+            <div class="stat-label">Grade A (Healthy)</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="border-left: 5px solid #0369a1;">
+          <div class="stat-icon blue">📏</div>
+          <div>
+            <div class="stat-value" id="rep-urs">0%</div>
+            <div class="stat-label">URS % (Undersized)</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="border-left: 5px solid #b91c1c;">
+          <div class="stat-icon amber">❌</div>
+          <div>
+            <div class="stat-value" id="rep-defective">0%</div>
+            <div class="stat-label">Defective %</div>
+          </div>
+        </div>
+
+        <div class="stat-card" style="border-left: 5px solid #7b1fa2;">
+          <div class="stat-icon purple">🤖</div>
+          <div>
+            <div class="stat-value" id="rep-avg-conf">0%</div>
+            <div class="stat-label">Avg AI Confidence</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Chart Visualizations & Explanation Grid -->
+      <div class="grid-2" style="margin-bottom: 1.5rem; grid-template-columns: 1fr 1fr;">
+
+        <!-- Left: Donut Chart Visualization -->
+        <div class="card">
+          <h3 class="card-title">Lot Grade Distribution</h3>
+          <div style="position:relative; height:240px; display:flex; justify-content:center;">
+            <canvas id="gradeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Right: Defect Breakdown Chart -->
+        <div class="card">
+          <h3 class="card-title">Defect Classification Breakdown</h3>
+          <div style="position:relative; height:240px;">
+            <canvas id="defectChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Narrative Section: Why did this lot receive this assessment? -->
+      <div class="card" style="margin-bottom: 1.5rem; background:#ffffff; border-left:5px solid var(--primary);">
+        <h3 class="card-title" style="color:var(--primary);">
+          🔍 Why did this lot receive this assessment?
+        </h3>
+        <div id="rep-explanation" style="font-size:0.95rem; color:#334155; line-height:1.7; white-space:pre-line;">
+          Loading assessment justification...
+        </div>
+      </div>
+
+      <!-- Detailed Defect Breakdown Count Table -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 class="card-title">Defect Count & Sample Breakdown</h3>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Classification</th>
+                <th>Category</th>
+                <th>Sample Count</th>
+                <th>Percentage</th>
+                <th>Quality Impact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Healthy</strong></td>
+                <td>Grade A</td>
+                <td id="count-healthy">0</td>
+                <td id="pct-healthy">0%</td>
+                <td><span style="color:#15803d; font-weight:600;">✓ Premium Procurement Grade</span></td>
+              </tr>
+              <tr>
+                <td><strong>Undersized</strong></td>
+                <td>URS (Minor Defect)</td>
+                <td id="count-undersized">0</td>
+                <td id="pct-undersized">0%</td>
+                <td><span style="color:#0369a1; font-weight:600;">ℹ️ Discounted Purchase Rate</span></td>
+              </tr>
+              <tr>
+                <td><strong>Damaged</strong></td>
+                <td>Defective (Cuts/Bruises)</td>
+                <td id="count-damaged">0</td>
+                <td id="pct-damaged">0%</td>
+                <td><span style="color:#b91c1c; font-weight:600;">⚠️ Rejected / Segregated</span></td>
+              </tr>
+              <tr>
+                <td><strong>Rotten</strong></td>
+                <td>Defective (Fungal Decay)</td>
+                <td id="count-rotten">0</td>
+                <td id="pct-rotten">0%</td>
+                <td><span style="color:#b91c1c; font-weight:600;">⚠️ Rejected / Segregated</span></td>
+              </tr>
+              <tr>
+                <td><strong>Sprouted</strong></td>
+                <td>Defective (Germination)</td>
+                <td id="count-sprouted">0</td>
+                <td id="pct-sprouted">0%</td>
+                <td><span style="color:#b91c1c; font-weight:600;">⚠️ Rejected / Segregated</span></td>
+              </tr>
+              <tr style="background:#f8fafc; font-weight:700;">
+                <td colspan="2">TOTAL SAMPLE ANALYZED</td>
+                <td id="count-total">0</td>
+                <td>100.0%</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Analyzed Images Gallery Grid with Predictions -->
+      <div class="card">
+        <h3 class="card-title">Image-Level Prediction Gallery</h3>
+        <div class="image-grid" id="report-images-grid" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));">
+          <!-- Dynamic image thumbnails inserted here -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <p><strong>PyaazSure</strong> • Smart Onion Quality Assessment & Grading System for SIH 2026 Prototype</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/report.js"></script>
+</body>
+</html>

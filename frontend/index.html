@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyaazSure - Smart Onion Quality Assessment & Grading System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="brand-icon">🧅</div>
+      <div>
+        <span class="brand-title">PyaazSure</span>
+        <span class="brand-subtitle">SIH 2026 • Smart Onion Quality System</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Dashboard</a></li>
+      <li><a href="lot.html">Register Lot</a></li>
+      <li><a href="upload.html">Assess Lot</a></li>
+      <li><a href="history.html">Lot History</a></li>
+      <li><a href="report.html">Reports</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+
+    <!-- Mock AI Banner -->
+    <div class="mock-notice">
+      <span>ℹ️</span>
+      <div>
+        <strong>MOCK AI INFERENCE ACTIVE:</strong> System currently uses simulated AI predictions (70%-99% confidence) for prototype testing. Modular backend architecture allows dropping in PyTorch/YOLO models without changing API/Grading logic.
+      </div>
+    </div>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Executive Dashboard</h1>
+        <p class="page-subtitle">Real-time procurement metrics, AI lot-level quality distribution, and human review flags.</p>
+      </div>
+      <div style="display:flex; gap:0.75rem;">
+        <a href="lot.html" class="btn btn-primary">+ Register New Lot</a>
+        <a href="upload.html" class="btn btn-secondary">⚡ Assess Sample Lot</a>
+      </div>
+    </div>
+
+    <!-- Overview Stats Cards -->
+    <div class="grid-4" style="margin-bottom: 2rem;">
+      <div class="stat-card">
+        <div class="stat-icon purple">📦</div>
+        <div>
+          <div class="stat-value" id="stat-total-lots">-</div>
+          <div class="stat-label">Total Lots Registered</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon blue">🧅</div>
+        <div>
+          <div class="stat-value" id="stat-total-onions">-</div>
+          <div class="stat-label">Total Onions Analyzed</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon green">⭐</div>
+        <div>
+          <div class="stat-value" id="stat-avg-grade-a">-</div>
+          <div class="stat-label">Average Grade A %</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon amber">⚠️</div>
+        <div>
+          <div class="stat-value" id="stat-review-count">-</div>
+          <div class="stat-label">Needs Human Review</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid: Recent Assessments & Quick Workflow -->
+    <div class="grid-3" style="grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+
+      <!-- Recent Lots Table -->
+      <div class="card">
+        <div class="card-title">
+          <span>Recent Lot Assessments</span>
+          <a href="history.html" style="font-size:0.85rem; color:var(--primary); font-weight:600; text-decoration:none;">View All →</a>
+        </div>
+
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Lot ID</th>
+                <th>Procurement Centre</th>
+                <th>Date</th>
+                <th>Samples</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="recent-lots-tbody">
+              <tr>
+                <td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">Loading recent assessments...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Quick Workflow & Architecture Info -->
+      <div style="display:flex; flex-direction:column; gap:1.5rem;">
+        
+        <div class="card" style="background: linear-gradient(135deg, #1e102f 0%, #3b1360 100%); color:#ffffff;">
+          <h3 style="font-size:1.15rem; margin-bottom:0.75rem; color:#f3e5f5;">🧅 PyaazSure Workflow</h3>
+          <ol style="padding-left:1.2rem; font-size:0.88rem; color:#e1bee7; display:flex; flex-direction:column; gap:0.5rem;">
+            <li><strong>Register Lot:</strong> Auto-generate Lot ID (ONN-2026-XXXXX).</li>
+            <li><strong>Upload Images:</strong> Capture or generate sample onion batch.</li>
+            <li><strong>Run AI Inference:</strong> Predict Healthy, Defective, Sprouted, etc.</li>
+            <li><strong>Grading Engine:</strong> Compute Grade A, URS & Defective percentages.</li>
+            <li><strong>Digital Report:</strong> Review report & flags (<80% AI confidence).</li>
+          </ol>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">System Status</h3>
+          <div style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.88rem;">
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+              <span style="color:var(--text-muted);">API Backend:</span>
+              <span style="font-weight:700; color:#15803d;">Active (FastAPI)</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+              <span style="color:var(--text-muted);">Database:</span>
+              <span style="font-weight:700; color:#0369a1;">SQLite / SQLAlchemy</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+              <span style="color:var(--text-muted);">Inference Layer:</span>
+              <span style="font-weight:700; color:#b45309;">Mock AI (Isolated)</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:var(--text-muted);">Grading Engine:</span>
+              <span style="font-weight:700; color:#7b1fa2;">Independent Standard</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <p><strong>PyaazSure</strong> • Smart Onion Quality Assessment & Grading System for SIH 2026 Prototype</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const stats = await apiFetch("/api/stats");
+        document.getElementById("stat-total-lots").textContent = stats.total_lots;
+        document.getElementById("stat-total-onions").textContent = stats.total_onions_analyzed;
+        document.getElementById("stat-avg-grade-a").textContent = `${stats.avg_grade_a_pct}%`;
+        document.getElementById("stat-review-count").textContent = stats.lots_needing_review;
+
+        const tbody = document.getElementById("recent-lots-tbody");
+        if (!stats.recent_lots || stats.recent_lots.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No onion lots registered yet. Click 'Register New Lot' to begin!</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = stats.recent_lots.map(lot => `
+          <tr>
+            <td><strong>${lot.lot_id}</strong></td>
+            <td>${lot.centre_name}</td>
+            <td>${lot.date}</td>
+            <td>${lot.image_count} / ${lot.sample_size_expected}</td>
+            <td>${renderStatusBadge(lot.status)}</td>
+            <td>
+              <a href="${lot.status.includes('Complete') || lot.status.includes('Review') ? 'report.html?lot_id=' + lot.lot_id : 'upload.html?lot_id=' + lot.lot_id}" class="btn btn-sm ${lot.status.includes('Complete') || lot.status.includes('Review') ? 'btn-primary' : 'btn-secondary'}">
+                ${lot.status.includes('Complete') || lot.status.includes('Review') ? 'View Report' : 'Upload / Assess'}
+              </a>
+            </td>
+          </tr>
+        `).join("");
+      } catch (err) {
+        console.error("Dashboard error:", err);
+      }
+    });
+  </script>
+</body>
+</html>
